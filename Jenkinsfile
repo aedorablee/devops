@@ -8,8 +8,6 @@ node {
     sh "git pull origin devops"
     sh "chmod 400 ajkim_us.pem"
     sh "scp -i ajkim_us.pem index.html ec2-user@172.16.0.63:/home/ec2-user/index.html"
-    sh "ssh -i ajkim_us.pem ec2-user@172.16.0.63"
-    sh "cp /home/ec2-user/index.html /usr/share/httpd/noindex/"
-    sh "systemctl restart httpd"
+    sh "ssh -i ajkim_us.pem ec2-user@172.16.0.63 'sudo cp /home/ec2-user/index.html /usr/share/httpd/noindex/html && sudo systemctl restart httpd'"
   }
 }
