@@ -3,7 +3,8 @@ pipeline {
     environment {
         AWS_DEFAULT_REGION = "us-east-1"
         ECR_REGISTRY = "203754240973.dkr.ecr.us-east-1.amazonaws.com"
-        IMAGE_NAME = "ajkim_nginx_from_jenkins"
+        REPOSITORY_NAME = "ajkim-repository"
+        IMAGE_NAME = "clijenkins3"
         IMAGE_TAG = "latest"
     }
     stages {
@@ -15,15 +16,15 @@ pipeline {
         stage('Build image') {
             steps {
                 sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
-		sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
         stage('Push image to ECR') {
             steps {
                 withAWS(credentials: 'jenkins-aws-devops-credentials', region: AWS_DEFAULT_REGION) {
                     sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
-                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker push ${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REGISTRY}/${REPOSITORY_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${ECR_REGISTRY}/${REPOSITORY_NAME}:${IMAGE_TAG}"
                 }
             }
         }
