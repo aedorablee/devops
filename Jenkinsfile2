@@ -21,8 +21,8 @@ pipeline {
             steps {
                 withAWS(credentials: 'jenkins-aws-devops-credentials', region: AWS_DEFAULT_REGION) {
                     sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}"
-                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REGISTRY}/ajkim-repository:${IMAGE_NAME}"
-                    sh "docker push ${ECR_REGISTRY}/ajkim-repository:${IMAGE_NAME}"
+                    sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REGISTRY}/ajkim-repository/${IMAGE_NAME}:${IMAGE_TAG}"
+                    sh "docker push ${ECR_REGISTRY}/ajkim-repository/${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
         }
