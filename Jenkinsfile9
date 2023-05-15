@@ -21,7 +21,7 @@ pipeline {
         stage('2. Build and Push image') {
 	    steps {
 		script { 
-                    docker.withRegistry("https://${ECR_REGISTRY}", "${AWS_CREDENTIAL_ID}") {
+                    docker.withRegistry("https://${ECR_REGISTRY}", "ecr:${AWS_DEFAULT_REGION}:${AWS_CREDENTIAL_ID}") {
 			def customImage = docker.build("${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}")
 			customImage.push()
             	    }			
@@ -37,7 +37,7 @@ pipeline {
 				sh "sed 's/IMAGE_VERSION/${env.BUILD_ID}/g' deployment.yaml > output.yaml"
             			sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
             			sh "kubectl apply -f output.yaml"
-	    			}			
+	    		}			
 	    	}
 	    }
 	}
