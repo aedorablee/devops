@@ -8,6 +8,7 @@ pipeline {
 	EKS_JENKINS_CREDENTIAL_ID = "kubectl-deploy-credentials"
         ECR_REGISTRY = "203754240973.dkr.ecr.us-east-1.amazonaws.com"
         IMAGE_NAME = "jenkins-eks-test"
+	IMAGE_TAG = "ekstest"
 	AWS_CRENDENTIAL_ID = "jenkins-aws-devops-credentials"
     }
     stages {
@@ -19,16 +20,20 @@ pipeline {
         }
         stage('2. Build image') {
 	    steps {
-                docker.withRegistry("https://${ECR_REGISTRY}", "ecr:${AWS_DEFAULT_REGION}:${AWS_CREDENTIAL_ID}") {
-			image = docker.build("${ECR_REGISTRY}/${IMAGE_NAME}")
-            	}
+		script { 
+                    docker.withRegistry("https://${ECR_REGISTRY}", "${AWS_CREDENTIAL_ID}") {
+			image = docker.build("${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}")
+            	    }			
+	    	}	
 	    }
 	}
         stage('3. Push image to ECR') {
 	    steps {
-		docker.withRegistry("https://${ECR_REGISTRY}", "ecr:${AWS_DEFAULT_REGION}:${AWS_CREDENTIAL_ID}") {
+		script {
+		    docker.withRegistry("https://${ECR_REGISTRY}", "${AWS_CREDENTIAL_ID}") {
 			image.push("${env.BUILD_NUMBER}")
-                }
+                    }
+		}
 	    }
         }
 	stage('4. Deploy to k8s') {
