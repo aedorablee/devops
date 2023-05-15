@@ -11,34 +11,33 @@ pipeline {
 	AWS_CRENDENTIAL_ID = "jenkins-aws-devops-credentials"
     }
     stages {
-        stage('Clone repository') {
+        stage('1. Clone repository') {
             steps {
                 checkout scm
 		sh "git pull origin devops"
             }
         }
-        stage('Build image') {
+        stage('2. Build image') {
             steps {
                 docker.withRegistry("https://${ECR_REGISTRY}", "ecr:${AWS_DEFAULT_REGION}:${AWS_CREDENTIAL_ID}") {
 			image = docker.build("${ECR_REGISTRY}/${IMAGE_NAME}")
             }
         }
-        stage('Push image to ECR') {
+        stage('3. Push image to ECR') {
             steps {
 		docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
 			image.push("${env.BUILD_NUMBER}")
                 }
             }
         }
-	stage('Deploy to k8s') {
+	stage('4. Deploy to k8s') {
 	    steps {
 		withKubeConfig([credentialsId: "${EKS_JENKINS_CREDENTIAL_ID}",
 				serverUrl: "${EKS_API}",
 				clusterName: "${EKS_CLUSTER_NAME}"]) {
-					sh "sed 's/IMAGE_VERSION/v${env.BUILD_ID}/g' service.yaml > output.yaml"
+					sh "sed 's/IMAGE_VERSION/v${env.BUILD_ID}/g' deployment.yaml > output.yaml"
             				sh "aws eks --region ${REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
             				sh "kubectl apply -f output.yaml"
-            				sh "rm output.yaml"
 	    			}
     }
 }
