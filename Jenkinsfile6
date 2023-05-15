@@ -17,12 +17,15 @@ pipeline {
 		sh "git pull origin devops"
             }
         }
+    }
         stage('2. Build image') {
             steps {
                 docker.withRegistry("https://${ECR_REGISTRY}", "ecr:${AWS_DEFAULT_REGION}:${AWS_CREDENTIAL_ID}") {
 			image = docker.build("${ECR_REGISTRY}/${IMAGE_NAME}")
-            }
-        }
+            	}
+            
+	    }
+	}
         stage('3. Push image to ECR') {
             steps {
 		docker.withRegistry("https://${ECR_PATH}", "ecr:${REGION}:${AWS_CREDENTIAL_ID}") {
@@ -39,6 +42,6 @@ pipeline {
             				sh "aws eks --region ${REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
             				sh "kubectl apply -f output.yaml"
 	    			}
-    }
+            }
+	}
 }
-
