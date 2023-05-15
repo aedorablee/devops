@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_DEFAULT_REGION = "us-east-1"
+	EKS_API = "https://FDC7C0E40970909EA38F748D9398197B.gr7.us-east-1.eks.amazonaws.com"
+	EKS_CLUSTER_NAME = "ajkim-eks-cluster"
+	EKS_JENKINS_CREDENTIAL_ID = "kubectl-deploy-credentials"
+        ECR_REGISTRY = "203754240973.dkr.ecr.us-east-1.amazonaws.com"
+        IMAGE_NAME = "jenkins-eks-test"
+	IMAGE_TAG = "ekstest"
+	AWS_CREDENTIAL_ID = "jenkins-aws-devops-credentials"
+    }
+    stages {
+        stage('1. Clone repository') {
+	    steps {
+                checkout scm
+		sh "git pull origin devops"
+	    }
+        }
+        stage('2. Build and Push image') {
+	    steps {
+		script { 
+                    docker.withRegistry("https://${ECR_REGISTRY}", "${AWS_CREDENTIAL_ID}") {
+			def customImage = docker.build("${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}")
+			customImage.push()
+            	    }			
+	    	}	
+	    }
+	}
+	stage('3. Deploy to k8s') {
+	    steps {
+		script {
+		    withKubeConfig([credentialsId: "${EKS_JENKINS_CREDENTIAL_ID}",
+			serverUrl: "${EKS_API}",
+			clusterName: "${EKS_CLUSTER_NAME}"]) {
+				sh "sed 's/IMAGE_VERSION/${env.BUILD_ID}/g' deployment.yaml > output.yaml"
+            			sh "aws eks --region ${AWS_DEFAULT_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}"
+            			sh "kubectl apply -f output.yaml"
+	    			}			
+	    	}
+	    }
+	}
+    }
+}
