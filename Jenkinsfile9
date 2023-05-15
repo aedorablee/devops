@@ -7,7 +7,7 @@ pipeline {
 	EKS_CLUSTER_NAME = "ajkim-eks-cluster"
 	EKS_JENKINS_CREDENTIAL_ID = "kubectl-deploy-credentials"
         ECR_REGISTRY = "203754240973.dkr.ecr.us-east-1.amazonaws.com"
-        IMAGE_NAME = "jenkins-eks-test"
+	ECR_REPOSITORY = "ajkim-repository"
 	IMAGE_TAG = "ekstest"
 	AWS_CREDENTIAL_ID = "jenkins-aws-devops-credentials"
     }
@@ -22,7 +22,7 @@ pipeline {
 	    steps {
 		script { 
                     docker.withRegistry("https://${ECR_REGISTRY}", "ecr:${AWS_DEFAULT_REGION}:${AWS_CREDENTIAL_ID}") {
-			def customImage = docker.build("${ECR_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}")
+			def customImage = docker.build("${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}")
 			customImage.push()
             	    }			
 	    	}	
