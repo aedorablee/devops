@@ -5,10 +5,10 @@ RUN mkdir /var/www/html/code
 # change index.html
 RUN echo '<!DOCTYPE html> \
 <head> \
-<title> SUCCESS </title> \
+<title> DOCKERFILE FROM ECR!! </title> \
 </head> \
 <body style="text-align:center"> \
-<h2> SUCCESS </h2> \
+<h2> DEPLOYED BY JENKINS </h2> \
 </body> \
 </html> ' > /var/www/html/code/index.html
 CMD ["systemctl","restart","httpd"]
