@@ -17,7 +17,6 @@ pipeline {
 		sh "git pull origin devops"
             }
         }
-    }
         stage('2. Build image') {
             steps {
                 docker.withRegistry("https://${ECR_REGISTRY}", "ecr:${AWS_DEFAULT_REGION}:${AWS_CREDENTIAL_ID}") {
@@ -44,4 +43,5 @@ pipeline {
 	    			}
             }
 	}
+    }
 }
