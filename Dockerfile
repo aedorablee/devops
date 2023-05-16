@@ -5,7 +5,7 @@ RUN mkdir /var/www/html/code
 # change index.html
 RUN echo '<!DOCTYPE html> \
 <head> \
-<title> DOCKERFILE FROM ECR!! </title> \
+<title> DOCKERFILE FROM ECR2222!! </title> \
 </head> \
 <body style="text-align:center"> \
 <h2> DEPLOYED BY JENKINS </h2> \
