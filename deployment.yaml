@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: cd
-          image: 203754240973.dkr.ecr.us-east-1.amazonaws.com/ajkim-repository:jenkins-eks-test
+          image: 203754240973.dkr.ecr.us-east-1.amazonaws.com/ajkim-repository:jenkins
           ports:
             - containerPort: 80
       imagePullSecrets:
